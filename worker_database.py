@@ -128,7 +128,7 @@ class WorkerDatabase:
                     return worker
         elif choice == "4":
             for worker in self.workers:
-                if worker.salary == int(query):
+                if str(worker.salary) == query:
                     return worker
         else:
             print("Wrong input!")    

@@ -4,7 +4,7 @@ class Worker:
         self.surname = surname
         self.salary = salary
         self.department = department
-        __id = 0
+        self.__id = 0
 
     def __str__(self):
         return f"{self.name} {self.surname}: {self.department}, {self.salary}"
