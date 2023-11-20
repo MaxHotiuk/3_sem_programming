@@ -1,11 +1,13 @@
 class Worker:
-    def __init__(self, name, surname, department, salary = 0):
+    _id_generator = iter(range(1, 10**6))
+
+    def __init__(self, name, surname, department, salary=0):
         self.name = name
         self.surname = surname
         self.salary = salary
         self.department = department
-        self.__id = 0
-
+        self.id = next(self._id_generator)
+    
     def __str__(self):
         return f"{self.name} {self.surname}: {self.department}, {self.salary}"
     

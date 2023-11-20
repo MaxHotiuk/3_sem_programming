@@ -1,7 +1,13 @@
 from worker_database import WorkerDatabase
+from os import system, name
+
+def clear():
+    if name == 'nt':
+        _ = system('cls')
+    else: _ = system('clear')
 
 def start_menu(menu):
-    print('\n')
+    clear()
     for key in menu.keys():
         print(key)
     return input()
@@ -24,6 +30,7 @@ def __main__():
         for key in menu.keys():
             if n + ":" in key:
                 menu[key]()
+        input("Press Enter to continue...")
 
 if __name__ == "__main__":
     __main__()

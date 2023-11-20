@@ -1,39 +1,7 @@
 from worker import Worker
 import csv
-
-def sort_decorator(func):
-    def wrapper(self):
-        print("Sort by: ")
-        print("1. Name")
-        print("2. Surname")
-        print("3. Department")
-        print("4. Salary")
-        choice = input()
-        func(self, choice)
-        print("Sorted by ")
-        if choice == "1":
-            print("name")
-        elif choice == "2":
-            print("surname")
-        elif choice == "3":
-            print("department")
-        elif choice == "4":
-            print("salary")
-    return wrapper
-
-def search_decorator(func):
-    def wrapper(self):
-        print("Search by: ")
-        print("1. Name")
-        print("2. Surname")
-        print("3. Department")
-        print("4. Salary")
-        choice = input()
-        print("Enter search query: ")
-        query = input()
-        print("Result is: ")
-        print(func(self, choice, query))
-    return wrapper
+from decorators import *
+from validation import *
 
 class WorkerDatabase:
     def __init__(self):
@@ -41,39 +9,57 @@ class WorkerDatabase:
     
     def read_csv(self):
         filename = input("Enter filename: ")
-        with open(filename, newline='') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=',')
-            id = 1
-            for row in reader:
-                if (len(self.workers) != 0):
-                    if (self.workers[-1].get_id() > id):
-                        id = self.workers[-1].get_id() + 1
-                self.workers.append(Worker(row['name'], row['surname'], row['department'], row['salary']))
-                self.workers[-1].set_id(id)
-                id += 1
-    
+        try:
+            with open(filename, newline='') as csvfile:
+                reader = csv.DictReader(csvfile, delimiter=',')
+                for row in reader:
+                    worker = Worker(row['name'], row['surname'], row['department'], row['salary'])
+                    if worker not in self.workers:
+                        self.workers.append(worker)
+        except FileNotFoundError:
+            print(f"The file {filename} does not exist.")
+        except csv.Error as e:
+            print(f"An error occurred while reading the CSV file: {e}")
+
     def delete_worker_by_id(self):
         id = input("Enter worker's id: ")
-        self.workers.pop(id-1)
+        while not integer_validation(id):
+            print("Invalid id. Please enter a valid integer:")
+            id = input()
+        id = int(id)
+        try:
+            worker_to_delete = next(worker for worker in self.workers if worker.id == id)
+            self.workers.remove(worker_to_delete)
+        except StopIteration:
+            print("No worker found with the provided id.")
 
     def add_worker(self):
-        print("Enter worker's name:")
-        name = input()
-        print("Enter worker's surname:")
-        surname = input()
-        print("Enter worker's department:")
-        department = input()
-        print("Enter worker's salary:")
-        salary = input()
-        if (len(self.workers) != 0):
-            id = self.workers[-1].get_id() + 1
-        else:
-            id = 1
-        worker = Worker(name, surname, department, salary)
+        name = input("Enter worker's name:")
+        while not validate_name(name):
+            print("Invalid name. Please enter again:")
+            name = input()
+
+        surname = input("Enter worker's surname:")
+        while not validate_name(surname):
+            print("Invalid surname. Please enter again:")
+            surname = input()
+
+        department = input("Enter worker's department:")
+
+        salary = input("Enter worker's salary:")
+        while not numeric_validation(salary):
+            print("Invalid salary. Please enter a valid integer:")
+            salary = input()
+
+        worker = Worker(name, surname, department, int(salary))
         self.workers.append(worker)
 
     def edit_by_id(self):
-        id = int(input("Enter worker's id: "))
+        id = input("Enter worker's id: ")
+        while not integer_validation(id):
+            print("Invalid id. Please enter a valid integer:")
+            id = input()
+        id = int(id)
         print("What to edit?")
         print("1. Name")
         print("2. Surname")
@@ -81,21 +67,29 @@ class WorkerDatabase:
         print("4. Salary")
         choice = input()
         if choice == "1":
-            print("Enter new name:")
-            name = input()
+            name = input("Enter new name:")
+            while not validate_name(name):
+                print("Invalid name. Please enter again:")
+                name = input()
             self.workers[id-1].name = name
         elif choice == "2":
-            print("Enter new surname:")
-            surname = input()
+            surname = input("Enter new surname:")
+            while not validate_name(surname):
+                print("Invalid surname. Please enter again:")
+                surname = input()
             self.workers[id-1].surname = surname
         elif choice == "3":
-            print("Enter new department:")
-            department = input()
+            department = input("Enter new department:")
+            while not validate_name(department):
+                print("Invalid department. Please enter again:")
+                department = input()
             self.workers[id-1].department = department
         elif choice == "4":
-            print("Enter new salary:")
-            salary = input()
-            self.workers[id-1].salary = salary
+            salary = input("Enter new salary:")
+            while not integer_validation(salary):
+                print("Invalid salary. Please enter a valid integer:")
+                salary = input()
+            self.workers[id-1].salary = int(salary)
         else:
             print("Wrong input!")
 
@@ -128,18 +122,23 @@ class WorkerDatabase:
                     return worker
         elif choice == "4":
             for worker in self.workers:
-                if str(worker.salary) == query:
+                if worker.salary == int(query):
                     return worker
         else:
             print("Wrong input!")    
 
     def print_csv(self):
         filename = input("Enter filename: ")
-        with open(filename, "w", newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(["name", "surname", "department", "salary"])
-            for worker in self.workers:
-                writer.writerow([worker.name, worker.surname, worker.department, str(worker.salary)])
+        try:
+            with open(filename, "w", newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(["name", "surname", "department", "salary"])
+                for worker in self.workers:
+                    writer.writerow([worker.name, worker.surname, worker.department, str(worker.salary)])
+        except FileNotFoundError:
+            print(f"The file {filename} cannot be opened.")
+        except csv.Error as e:
+            print(f"An error occurred while writing to the CSV file: {e}")
 
     def print_workers(self):
         for worker in self.workers:
