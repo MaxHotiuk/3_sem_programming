@@ -1,4 +1,5 @@
 from worker_database import WorkerDatabase
+from unit_tests import TestWorkerDatabase
 from os import system, name
 
 def clear():
@@ -14,6 +15,7 @@ def start_menu(menu):
 
 def __main__():
     worker_database = WorkerDatabase()
+    tests = TestWorkerDatabase()
     menu = {
         "1: Read CSV": worker_database.read_csv,
         "2: Delete worker": worker_database.delete_worker_by_id,
@@ -23,7 +25,8 @@ def __main__():
         "6: Print workers": worker_database.print_workers,
         "7: Sort workers": worker_database.sort,
         "8: Search worker": worker_database.search,
-        "9: Exit": exit
+        "9: Unit tests": tests.run_tests,
+        "10: Exit": exit
     }
     while True:
         n = start_menu(menu)
