@@ -6,10 +6,10 @@ class Worker:
         self.surname = surname
         self.salary = salary
         self.department = department
-        self.id = next(self._id_generator)
+        self.__id = next(self._id_generator)
     
     def __str__(self):
-        return f"{self.name} {self.surname}: {self.department}, {self.salary}"
+        return f"{self.__id} {self.name} {self.surname}: {self.department}, {self.salary}"
     
     def set_id(self, id):
         self.__id = id
