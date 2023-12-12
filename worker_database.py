@@ -33,7 +33,7 @@ class WorkerDatabase:
             id = simpledialog.askstring("Input", "Enter worker's id: ")
         id = int(id)
         try:
-            worker_to_delete = next(worker for worker in self.workers if worker.id == id)
+            worker_to_delete = next(worker for worker in self.workers if worker.get_id() == id)
             self.workers.remove(worker_to_delete)
         except StopIteration:
             simpledialog.messagebox.showinfo("Failure", "No worker found with the provided id.")

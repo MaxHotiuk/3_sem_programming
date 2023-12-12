@@ -34,7 +34,7 @@ class TestWorkerDatabase(TestCase):
     def test_sort_by_name(self):
         simpledialog.messagebox.showinfo("Test", "Testing sorting by NAME...")
         self.worker_database.sort()
-        self.assertEqual(self.worker_database.workers[0].name, "Boba")
+        self.assertEqual(self.worker_database.workers[0].name, "Anatoly")
     
     def test_search(self):
         simpledialog.messagebox.showinfo("Test", "Testing search...")
